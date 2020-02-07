@@ -1,0 +1,35 @@
+version: '3.7'
+services:
+  node-web:
+    build: ./node-app
+    ports:
+      - "5001:3000"
+    networks:
+      - escher-practice
+    environment:
+      - ESCHER_CREDENTIAL_SCOPE=eu/node/scope
+      - ESCHER_KEYPOOL=[{"keyId":"python-node_v1","secret":"PythonNode", "acceptOnly":1}]
+      - PYTHON_ESCHER_CREDENTIAL_SCOPE=eu/python/scope
+      - PYTHON_ESCHER_KEY_ID=node-python_v1
+      - PYTHON_ESCHER_SECRET=NodePython
+      - PYTHON_HOST=flask-web
+      - PYTHON_PORT=5000
+
+  flask-web:
+    build: ./python-app
+    ports:
+      - "5000:5000"
+    networks:
+      - escher-practice
+    environment: 
+      - FLASK_DEBUG=1
+      - ESCHER_CREDENTIAL_SCOPE=eu/python/scope
+      - ESCHER_KEYPOOL=[{"keyId":"node-python_v1","secret":"NodePython", "acceptOnly":1}]
+      - NODE_ESCHER_CREDENTIAL_SCOPE=eu/node/scope
+      - NODE_ESCHER_KEY_ID=python-node_v1
+      - NODE_ESCHER_SECRET=PythonNode
+      - NODE_HOST=node-web
+      - NODE_PORT=3000
+
+networks:
+  escher-practice:
